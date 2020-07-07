@@ -1,0 +1,23 @@
+#error-root {
+  margin: 0;
+}
+
+.App {
+  position: relative;
+  font-size: 6vh;
+}
+
+.Calendar {
+  display: grid;
+  grid-template-rows: repeat(12, 1fr);
+  height: 100vh;
+  align-items: center;
+  width: 100vw;
+  text-align: center;
+  overflow: hidden;
+}
+
+.BackdropContainer {
+  width: 100vw;
+  overflow: hidden;
+}
