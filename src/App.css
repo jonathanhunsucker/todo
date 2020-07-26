@@ -3,8 +3,7 @@
 }
 
 .App {
-  position: relative;
-  font-size: 6vh;
+  margin: 1em;
 }
 
 .Calendar {
