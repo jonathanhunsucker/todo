@@ -29,41 +29,85 @@ function App() {
 
 function Index({ items, dispatch }) {
   return (
-    <div>
-      <button onClick={() => dispatch({ type: 'ADD_ITEM' })}>new</button>
-      {items.filter((item) => item.status !== DONE).map((item) => (<ItemLink key={item.id} item={item} dispatch={dispatch} />))}
-      {items.filter((item) => item.status === DONE).map((item) => (<ItemLink key={item.id} item={item} dispatch={dispatch} />))}
-    </div>
+    <Stack>
+      <div>
+        <Button onClick={() => dispatch({ type: 'ADD_ITEM' })}>new</Button>
+      </div>
+      <Stack gap={1}>
+        <h3>TODO</h3>
+        <ItemLinkList items={items.filter((item) => item.status !== DONE)} dispatch={dispatch} />
+      </Stack>
+      <Stack gap={1}>
+        <h3>DONE</h3>
+        <ItemLinkList items={items.filter((item) => item.status === DONE)} dispatch={dispatch} />
+      </Stack>
+    </Stack>
+  )
+}
+
+function ItemLinkList({ items, dispatch }) {
+  return (
+    <Stack gap={1}>
+      {items.map((item) => (<ItemLink key={item.id} item={item} dispatch={dispatch} />))}
+      {items.length === 0 && <div>None</div>}
+    </Stack>
   )
 }
 
 function Item({ item, dispatch }) {
   return (
-    <div>
-      <button onClick={() => dispatch({ type: 'GOTO', page: 'INDEX' })}>back</button>
+    <Stack>
+      <div> 
+        <Button onClick={() => dispatch({ type: 'GOTO', page: 'INDEX' })}>back</Button>
+      </div>
       {item && <ItemEditor item={item} dispatch={dispatch} />}
-    </div>
+    </Stack>
   )
 }
 
 function ItemLink({ item, dispatch }) {
   return (
     <div>
-      <ButtonLink style={{ textDecoration: item.status === DONE ? 'strikethrough': 'none' }} onClick={() => dispatch({ type: 'GOTO', page: 'ITEM', params: { itemId: item.id } })}>{item.title}</ButtonLink>
+      <div>
+        <button
+          style={{
+            fontFamily: 'serif',
+            border: '0',
+            fontSize: '1em',
+            background: 'transparent',
+            margin: '0',
+            padding: '0',
+            textDecoration: 'underline',
+            color: 'blue',
+            textAlign: 'left',
+          }}
+          onClick={() => dispatch({ type: 'GOTO', page: 'ITEM', params: { itemId: item.id } })}
+        >
+          {item.title}
+        </button>
+      </div>
     </div>
   )
 }
 
 function ItemEditor({ item, dispatch }) {
   return (
-    <div>
+    <Stack>
+      {item.status !== DONE && <div><Button onClick={() => dispatch({ type: 'MARK_AS', itemId: item.id, status: DONE })}>mark as done</Button></div>}
+      {item.status === DONE && <div><Button onClick={() => dispatch({ type: 'MARK_AS', itemId: item.id, status: TODO })}>mark as todo</Button></div>}
       <div>
-        {item.status !== DONE && <button onClick={() => dispatch({ type: 'MARK_AS', itemId: item.id, status: DONE })}>mark as done</button>}
-        {item.status === DONE && <button onClick={() => dispatch({ type: 'MARK_AS', itemId: item.id, status: TODO })}>mark as todo</button>}
-        <button onClick={() => window.confirm('Are you sure?') && dispatch({ type: 'REMOVE_ITEM', itemId: item.id })}>delete...</button>
+        <textarea
+          style={{
+            resize: 'vertical',
+            width: '100%',
+            minHeight: '20em',
+          }}
+          value={item.title}
+          onChange={(e) => dispatch({ type: 'SET_ITEM_TITLE', itemId: item.id, value: e.target.value })}
+        />
       </div>
-      <input type="text" value={item.title} onChange={(e) => dispatch({ type: 'SET_ITEM_TITLE', itemId: item.id, value: e.target.value })} />
-    </div>
+      <div><Button onClick={() => window.confirm('Are you sure?') && dispatch({ type: 'REMOVE_ITEM', itemId: item.id })}>delete...</Button></div>
+    </Stack>
   )
 }
 
@@ -114,9 +158,30 @@ function generateRandomId() {
   return Math.random().toString(36).substring(7)
 }
 
-function ButtonLink({ onClick, children }) {
+function Button({ ...props }) {
   return (
-    <button style={{ fontFamily: 'serif', border: '0', fontSize: '1em', background: 'transparent', margin: '0', padding: '0', textDecoration: 'underline', color: 'blue' }} onClick={onClick}>{children}</button>
+    <button
+      style={{
+        padding: '0.5em 1em',
+        background: 'white',
+        border: '1px solid grey',
+        borderRadius: '0.25em',
+        margin: 0,
+      }}
+      {...props}
+    />
+  )
+}
+
+function Stack({ gap = 2, ...props }) {
+  return (
+    <div
+      style={{
+        display: 'grid',
+        gap: `${gap / 2}em`,
+      }}
+      {...props}
+    />
   )
 }
 
